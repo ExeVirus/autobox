@@ -10,27 +10,31 @@ local function param2offset(pos, param2)
         {"z",1,"y",1,"x",-1}, --1
         {"x",-1,"y",1,"z",-1}, --2
 		{"z",-1,"y",1,"x",1}, --3
+		
 		{"x",1,"z",-1,"y",1}, --4
 		{"z",1,"x",1,"y",1}, --5
 		{"x",-1,"z",1,"y",1}, --6
 		{"z",-1,"x",-1,"y",1}, --7
 		
-		{"x",1,"y",1,"z",1}, --8
-		{"x",1,"y",1,"z",1}, --9
-		{"x",1,"y",1,"z",1}, --10
-		{"x",1,"y",1,"z",1}, --11
-		{"x",1,"y",1,"z",1}, --12
-		{"x",1,"y",1,"z",1}, --13
-		{"x",1,"y",1,"z",1}, --14
-		{"x",1,"y",1,"z",1}, --15
-		{"x",1,"y",1,"z",1}, --16
-		{"x",1,"y",1,"z",1}, --17
-		{"x",1,"y",1,"z",1}, --18
-		{"x",1,"y",1,"z",1}, --19
-		{"x",1,"y",1,"z",1}, --20
-		{"x",1,"y",1,"z",1}, --21
-		{"x",1,"y",1,"z",1}, --22
-		{"x",1,"y",1,"z",1}, --23   
+		{"x",1,"z",1,"y",-1}, --8
+		{"z",1,"x",-1,"y",-1}, --9
+		{"x",-1,"z",-1,"y",-1}, --10
+		{"z",-1,"x",1,"y",-1}, --11
+		
+		{"y",1,"x",-1,"z",1}, --12
+		{"y",1,"z",-1,"x",-1}, --13
+		{"y",1,"x",1,"z",-1}, --14
+		{"y",1,"z",1,"x",1}, --15
+		
+		{"y",-1,"x",1,"z",1}, --16
+		{"y",-1,"z",1,"x",-1}, --17
+		{"y",-1,"x",-1,"z",-1}, --18
+		{"y",-1,"z",-1,"x",1}, --19
+		
+		{"x",-1,"y",-1,"z",1}, --20
+		{"z",-1,"y",-1,"x",-1}, --21
+		{"x",1,"y",-1,"z",-1}, --22
+		{"z",1,"y",-1,"x",1}, --23   
         } --End all 24 directions
         ret.x = pos[param2Table[param2][1]] * param2Table[param2][2] --{x or y or z value} * {+1 or -1}
         ret.y = pos[param2Table[param2][3]] * param2Table[param2][4]
@@ -225,6 +229,11 @@ if data.numNodes > 1 then
 				minetest.node_dig(parent_pos, {name=name}, digger)
 			end
 			
+			child_def.on_rotate = function(pos, node, user, mode, new_param2)
+				local parent_pos = minetest.deserialize(minetest.get_meta(pos):get_string("parent_pos"))
+				return minetest.registered_nodes[name].on_rotate(parent_pos, minetest.get_node(parent_pos), user, mode, new_param2)	
+			end
+			
             minetest.register_node(name..i-1, child_def)
 	end  
     
@@ -356,3 +365,26 @@ node_definition ={
 
 }
 autobox.register_node("autobox:spike2_relo","spike2-relo.box",node_definition,false)
+
+node_definition ={
+	description =  "Wagon",
+	drawtype = "mesh",
+        mesh = "wagon.obj",
+        sunlight_propagates = true,
+        paramtype2 = "facedir",
+        collision_box = {
+            type = "fixed",
+            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
+        },
+        selection_box = {
+            type = "fixed",
+            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
+        },
+
+        tiles = {"wagon.png"},
+
+        
+        groups = { cracky=2 },
+
+}
+autobox.register_node("autobox:wagon","wagon.box",node_definition,false)
