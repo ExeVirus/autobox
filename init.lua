@@ -125,6 +125,129 @@ if data.numNodes > 1 then
 			minetest.get_meta(child_pos):set_string("parent_pos", minetest.serialize(pos)) --set that node's parent
         end
     end
+	
+	----------------------------------------On Place-----------------------------------------------	
+	-- placement_node.on_place = function(itemstack, placer, pointed_thing) --Mostly taken from core.item_place_node
+		-- if pointed_thing.type ~= "node" then
+			-- return itemstack, nil
+		-- end
+		-- local under = pointed_thing.under
+		-- local oldnode_under = minetest.get_node_or_nil(under)
+		-- local above = pointed_thing.above
+		-- local oldnode_above = minetest.get_node_or_nil(above)
+		-- local playername = user_name(placer)
+		-- local log = make_log(playername)
+	
+		-- if not oldnode_under or not oldnode_above then
+			-- log("info", playername .. " tried to place"
+				-- .. " node in unloaded position " .. core.pos_to_string(above))
+			-- return itemstack, nil
+		-- end
+		
+		-- local olddef_under = core.registered_nodes[oldnode_under.name]
+		-- olddef_under = olddef_under or core.nodedef_default
+		-- local olddef_above = core.registered_nodes[oldnode_above.name]
+		-- olddef_above = olddef_above or core.nodedef_default
+
+		-- if not olddef_above.buildable_to and not olddef_under.buildable_to then
+			-- log("info", playername .. " tried to place"
+				-- .. " node in invalid position " .. core.pos_to_string(above)
+				-- .. ", replacing " .. oldnode_above.name)
+			-- return itemstack, nil
+		-- end
+		
+		-- -- Place above pointed node
+		-- local place_to = {x = above.x, y = above.y, z = above.z}
+		
+		-- -- If node under is buildable_to, place into it instead (eg. snow)
+		-- if olddef_under.buildable_to then
+			-- log("info", "node under is buildable to")
+			-- place_to = {x = under.x, y = under.y, z = under.z}
+		-- end
+		
+		-- if core.is_protected(place_to, playername) then
+			-- log("action", playername
+					-- .. " tried to place " .. def.name
+					-- .. " at protected position "
+					-- .. core.pos_to_string(place_to))
+			-- core.record_protection_violation(place_to, playername)
+			-- return itemstack, nil
+		-- end
+		
+		-- ---------------Now check protection for all the other nodes:
+		
+		-- if respect_nodes == true then
+			-- --Now check if all spots besides the first is available
+			-- --If not, let the player know where
+		-- end
+		
+		-- local oldnode = core.get_node(place_to)
+		-- local newnode = {name = def.name, param1 = 0, param2 = param2 or 0}
+		
+		-- if def.place_param2 ~= nil then
+			-- newnode.param2 = def.place_param2
+		-- elseif (def.paramtype2 == "facedir" or
+				-- def.paramtype2 == "colorfacedir") and not param2 then
+			-- local placer_pos = placer and placer:get_pos()
+			-- if placer_pos then
+				-- local dir = {
+					-- x = above.x - placer_pos.x,
+					-- y = above.y - placer_pos.y,
+					-- z = above.z - placer_pos.z
+				-- }
+				-- newnode.param2 = core.dir_to_facedir(dir)
+				-- log("info", "facedir: " .. newnode.param2)
+			-- end
+		-- end
+
+		-- log("action", playername .. " places node "
+				-- .. def.name .. " at " .. core.pos_to_string(place_to))		
+		
+		-- -- Add node and update
+		-- minetest.add_node(place_to, newnode)
+		
+		-- -------------------------------------------- add the rest of the nodes
+		
+		
+		
+		-- -- Play sound if it was done by a player
+		-- if playername ~= "" and def.sounds and def.sounds.place then
+			-- minetest.sound_play(def.sounds.place, {
+				-- pos = place_to,
+				-- exclude_player = playername,
+			-- }, true)
+		-- end
+		
+		-- local take_item = true
+		
+		-- -- Run callback
+		-- if def.after_place_node and not prevent_after_place then
+			-- -- Deepcopy place_to and pointed_thing because callback can modify it
+			-- local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
+			-- local pointed_thing_copy = copy_pointed_thing(pointed_thing)
+			-- if def.after_place_node(place_to_copy, placer, itemstack,
+					-- pointed_thing_copy) then
+				-- take_item = false
+			-- end
+		-- end
+		
+		-- -- Run script hook
+		-- for _, callback in ipairs(core.registered_on_placenodes) do
+			-- -- Deepcopy pos, node and pointed_thing because callback can modify them
+			-- local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
+			-- local newnode_copy = {name=newnode.name, param1=newnode.param1, param2=newnode.param2}
+			-- local oldnode_copy = {name=oldnode.name, param1=oldnode.param1, param2=oldnode.param2}
+			-- local pointed_thing_copy = copy_pointed_thing(pointed_thing)
+			-- if callback(place_to_copy, newnode_copy, placer, oldnode_copy, itemstack, pointed_thing_copy) then
+				-- take_item = false
+			-- end
+		-- end
+		
+		-- if take_item then
+			-- itemstack:take_item()
+		-- end
+		-- return itemstack, place_to
+	-- end
     
     ----------------------------------------On Destruct----------------------------------------
     placement_node.on_destruct = function(pos)
@@ -388,3 +511,26 @@ node_definition ={
 
 }
 autobox.register_node("autobox:wagon","wagon.box",node_definition,false)
+
+node_definition ={
+	description =  "Bridge",
+	drawtype = "mesh",
+        mesh = "bridge.obj",
+        sunlight_propagates = true,
+        paramtype2 = "facedir",
+        collision_box = {
+            type = "fixed",
+            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
+        },
+        selection_box = {
+            type = "fixed",
+            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
+        },
+
+        tiles = {"bridge.png"},
+
+        
+        groups = { cracky=2 },
+
+}
+autobox.register_node("autobox:bridge","bridge.box",node_definition,false)
