@@ -67,7 +67,6 @@ function autobox.register_node(name, data_filename, node_definition, respect_nod
 -- Load the data
 local modname = minetest.get_current_modname()
 local path = minetest.get_modpath(modname)
-minetest.log( path .. "/data/" .. data_filename )
 local f = io.open(path .. "/data/" .. data_filename, "rb")
 local data = minetest.deserialize(f:read("*all"))
 io.close(f)
@@ -86,43 +85,43 @@ if data.numNodes > 1 then
     end
     
     ----------------------------------------On Construct-----------------------------------------------
-    placement_node.on_construct = function(pos)
-        --Check if placement can occur:
-        if respect_nodes == true then
-            for i=2,data.numNodes do
-                local node_pos = vector.add(pos, data.nodes[i].position)
-                local node_name = minetest.get_node_or_nil(node_pos).name
-                if node_name ~= "air" and node_name ~= nil then
+    -- placement_node.on_construct = function(pos)
+        -- --Check if placement can occur:
+        -- if respect_nodes == true then
+            -- for i=2,data.numNodes do
+                -- local node_pos = vector.add(pos, data.nodes[i].position)
+                -- local node_name = minetest.get_node_or_nil(node_pos).name
+                -- if node_name ~= "air" and node_name ~= nil then
                     
-                    minetest.remove_node(pos) --Placement Won't work
+                    -- minetest.remove_node(pos) --Placement Won't work
                     
-                    --Let the nearby players know why it didn't work
-                    local all_objects = minetest.get_objects_inside_radius(pos, 15)
-                    for _,obj in ipairs(all_objects) do
-                        if obj:is_player() then
-                            minetest.chat_send_player(obj,"Unable to place " .. name .. " due to node already at: (" .. node_pos.x .. ", " .. node_pos.y .. ", " .. node_pos.z .. ")")
-                        end
-                    end
-                    return false --hopefully this is allowed :)
-                end
-            end
-        end
+                    -- --Let the nearby players know why it didn't work
+                    -- local all_objects = minetest.get_objects_inside_radius(pos, 15)
+                    -- for _,obj in ipairs(all_objects) do
+                        -- if obj:is_player() then
+                            -- minetest.chat_send_player(obj,"Unable to place " .. name .. " due to node already at: (" .. node_pos.x .. ", " .. node_pos.y .. ", " .. node_pos.z .. ")")
+                        -- end
+                    -- end
+                    -- return false --hopefully this is allowed :)
+                -- end
+            -- end
+        -- end
         
-        --Okay we will be able to place our object without any issues, let's do so
+        -- --Okay we will be able to place our object without any issues, let's do so
   
-        --First save the positions of all the child nodes
-        local meta = minetest.get_meta(pos)
-        meta:set_string("child_nodes", minetest.serialize(node_pos_list))
-		meta:set_string("numNodes", tostring(data.numNodes-1))
-		local parent_param2 = minetest.get_node(pos).param2
+        -- --First save the positions of all the child nodes
+        -- local meta = minetest.get_meta(pos)
+        -- meta:set_string("child_nodes", minetest.serialize(node_pos_list))
+		-- meta:set_string("numNodes", tostring(data.numNodes-1))
+		-- local parent_param2 = minetest.get_node(pos).param2
         
-        --then place all the child nodes
-        for i=2,data.numNodes do
-			local child_pos = vector.add(pos, param2offset(data.nodes[i].position, parent_param2)) --calculate node position
-            minetest.set_node(child_pos,{name=name..i-1, param1 = 0, param2 = parent_param2 }) --set the node
-			minetest.get_meta(child_pos):set_string("parent_pos", minetest.serialize(pos)) --set that node's parent
-        end
-    end
+        -- --then place all the child nodes
+        -- for i=2,data.numNodes do
+			-- local child_pos = vector.add(pos, param2offset(data.nodes[i].position, parent_param2)) --calculate node position
+            -- minetest.set_node(child_pos,{name=name..i-1, param1 = 0, param2 = parent_param2 }) --set the node
+			-- minetest.get_meta(child_pos):set_string("parent_pos", minetest.serialize(pos)) --set that node's parent
+        -- end
+    -- end
 	
 	----------------------------------------On Place-----------------------------------------------	
 	placement_node.on_place = function(itemstack, placer, pointed_thing) --Mostly taken from core.item_place_node
@@ -133,23 +132,23 @@ if data.numNodes > 1 then
 		local oldnode_under = minetest.get_node_or_nil(under)
 		local above = pointed_thing.above
 		local oldnode_above = minetest.get_node_or_nil(above)
-		local playername = user_name(placer)
-		local log = make_log(playername)
+		local playername = placer:get_player_name()
+		local log = minetest.log
 	
 		if not oldnode_under or not oldnode_above then
 			log("info", playername .. " tried to place"
-				.. " node in unloaded position " .. core.pos_to_string(above))
+				.. " node in unloaded position " .. minetest.pos_to_string(above))
 			return itemstack, nil
 		end
 		
-		local olddef_under = core.registered_nodes[oldnode_under.name]
-		olddef_under = olddef_under or core.nodedef_default
-		local olddef_above = core.registered_nodes[oldnode_above.name]
-		olddef_above = olddef_above or core.nodedef_default
+		local olddef_under = minetest.registered_nodes[oldnode_under.name]
+		olddef_under = olddef_under or minetest.nodedef_default
+		local olddef_above = minetest.registered_nodes[oldnode_above.name]
+		olddef_above = olddef_above or minetest.nodedef_default
 
 		if not olddef_above.buildable_to and not olddef_under.buildable_to then
 			log("info", playername .. " tried to place"
-				.. " node in invalid position " .. core.pos_to_string(above)
+				.. " node in invalid position " .. minetest.pos_to_string(above)
 				.. ", replacing " .. oldnode_above.name)
 			return itemstack, nil
 		end
@@ -165,7 +164,7 @@ if data.numNodes > 1 then
 		
 		if minetest.is_protected(place_to, playername) then
 			log("action", playername
-					.. " tried to place " .. def.name
+					.. " tried to place " .. placement_node.name
 					.. " at protected position "
 					.. minetest.pos_to_string(place_to))
 			minetest.record_protection_violation(place_to, playername)
@@ -174,13 +173,13 @@ if data.numNodes > 1 then
         
         --Get the param2 set before cycling through children nodes
         
-        local oldnode = core.get_node(place_to)
-		local newnode = {name = def.name, param1 = 0, param2 = param2 or 0}
+        local oldnode = minetest.get_node(place_to)
+		local newnode = {name = name, param1 = 0, param2 = param2 or 0}
 		
-		if def.place_param2 ~= nil then
-			newnode.param2 = def.place_param2
-		elseif (def.paramtype2 == "facedir" or
-				def.paramtype2 == "colorfacedir") and not param2 then
+		if placement_node.place_param2 ~= nil then
+			newnode.param2 = placement_node.place_param2
+		elseif (placement_node.paramtype2 == "facedir" or
+				placement_node.paramtype2 == "colorfacedir") and not param2 then
 			local placer_pos = placer and placer:get_pos()
 			if placer_pos then
 				local dir = {
@@ -200,7 +199,7 @@ if data.numNodes > 1 then
                 log("action", playername
                         .. " tried to place " .. def.name .. i-1
                         .. " at protected position "
-                        .. minetest.pos_to_string(node_pos))
+                        .. minetest.pos_to_string(child_pos))
                 minetest.record_protection_violation(place_to, playername)
                 --Let the player know:
                 minetest.chat_send_player(playername, "Unable to place object at ".. minetest.pos_to_string(place_to) .. " due to protection at: " .. minetest.pos_to_string(node_pos))
@@ -212,26 +211,27 @@ if data.numNodes > 1 then
         --If not, let the player know where
 		if respect_nodes == true then
             for i=2,data.numNodes do
-            local child_pos = vector.add(place_to, param2offset(data.nodes[i].position, newnode.param2))
-            local old_node = minetest.get_node_or_nil(child_pos)
-            if old_node.name ~= "air" or old_node ~= nil or minetest.registered_nodes[old_node.name].draw_type == "liquid" or minetest.registered_nodes[old_node.name].draw_type == "flowingliquid" then
-                log("action", playername
-                        .. " tried to place " .. def.name
-                        .. " (an autobox multi-node model) at inhabited position "
-                        .. minetest.pos_to_string(node_pos))
-                minetest.chat_send_player(playername, "Unable to place object at ".. minetest.pos_to_string(place_to) .. " due to " .. old_node.name .. " node at " .. minetest.pos_to_string(child_pos))
-                return itemstack, nil
-            end
+				local child_pos = vector.add(place_to, param2offset(data.nodes[i].position, newnode.param2))
+				local old_node = minetest.get_node_or_nil(child_pos)
+				if old_node.name ~= "air" and old_node ~= nil and minetest.registered_nodes[old_node.name].draw_type == "liquid" and minetest.registered_nodes[old_node.name].draw_type == "flowingliquid" then
+					log("action", playername
+							.. " tried to place " .. name
+							.. " (an autobox multi-node model) at inhabited position "
+							.. minetest.pos_to_string(child_pos))
+					minetest.chat_send_player(playername, "Unable to place object at ".. minetest.pos_to_string(place_to) .. " due to " .. old_node.name .. " node at " .. minetest.pos_to_string(child_pos))
+					return itemstack, nil
+				end
+			end
         end
 
 		log("action", playername .. " places node "
-				.. def.name .. " at " .. core.pos_to_string(place_to))		
+				.. name .. " at " .. core.pos_to_string(place_to))		
 		
 		-- Add node and update
 		minetest.add_node(place_to, newnode)
         
         --Set up meta for finding the child nodes later
-        local meta = minetest.get_meta(pos)
+        local meta = minetest.get_meta(place_to)
         meta:set_string("child_nodes", minetest.serialize(node_pos_list))
 		meta:set_string("numNodes", tostring(data.numNodes-1))
 		
@@ -245,8 +245,8 @@ if data.numNodes > 1 then
         end
 			
 		-- Play sound if it was done by a player
-		if playername ~= "" and def.sounds and def.sounds.place then
-			minetest.sound_play(def.sounds.place, {
+		if playername ~= "" and placement_node.sounds and placement_node.sounds.place then
+			minetest.sound_play(placement_node.sounds.place, {
 				pos = place_to,
 				exclude_player = playername,
 			}, true)
@@ -255,11 +255,11 @@ if data.numNodes > 1 then
 		local take_item = true
 		
 		-- Run callback
-		if def.after_place_node and not prevent_after_place then
+		if placement_node.after_place_node and not prevent_after_place then
 			-- Deepcopy place_to and pointed_thing because callback can modify it
 			local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
 			local pointed_thing_copy = copy_pointed_thing(pointed_thing)
-			if def.after_place_node(place_to_copy, placer, itemstack,
+			if placement_node.after_place_node(place_to_copy, placer, itemstack,
 					pointed_thing_copy) then
 				take_item = false
 			end
@@ -271,7 +271,7 @@ if data.numNodes > 1 then
 			local place_to_copy = {x=place_to.x, y=place_to.y, z=place_to.z}
 			local newnode_copy = {name=newnode.name, param1=newnode.param1, param2=newnode.param2}
 			local oldnode_copy = {name=oldnode.name, param1=oldnode.param1, param2=oldnode.param2}
-			local pointed_thing_copy = copy_pointed_thing(pointed_thing)
+			local pointed_thing_copy = copy(pointed_thing)
 			if callback(place_to_copy, newnode_copy, placer, oldnode_copy, itemstack, pointed_thing_copy) then
 				take_item = false
 			end
@@ -330,7 +330,7 @@ if data.numNodes > 1 then
             for i=1,numNodes do
                 local child_pos = vector.add(pos, param2offset(node_pos_list[i], new_param2))
                 local old_node = minetest.get_node_or_nil(child_pos)
-                if old_node.name ~= "air" or old_node ~= nil or minetest.registered_nodes[old_node.name].draw_type == "liquid" or minetest.registered_nodes[old_node.name].draw_type == "flowingliquid" then
+                if old_node.name ~= "air" and old_node ~= nil and minetest.registered_nodes[old_node.name].draw_type ~= "liquid" and minetest.registered_nodes[old_node.name].draw_type ~= "flowingliquid" then
                     minetest.chat_send_player(playername, "Unable to place object at ".. minetest.pos_to_string(place_to) .. " due to " .. old_node.name .. " node at " .. minetest.pos_to_string(child_pos))
                     return false --Fail to rotate
                 end
@@ -400,7 +400,6 @@ if data.numNodes > 1 then
 			child_def.on_destruct = function(pos) --This will only occur on a dig
 				local parent_pos = minetest.deserialize(minetest.get_meta(pos):get_string("parent_pos"))
                 minetest.remove_node(parent_pos)
-				end
 			end
 			
 			child_def.on_dig = function(pos, node, digger)
@@ -430,8 +429,6 @@ if data.numNodes > 1 then
 			
             minetest.register_node(name..i-1, child_def)
 	end  
-    
-
 else 
                                     -----------Single node representation----------------
 	--Only need to overwrite the collision and selection boxes
@@ -494,7 +491,7 @@ node_definition ={
         groups = { cracky=2 },
 
 }
-autobox.register_node("autobox:spike","spike.box",node_definition,false)
+autobox.register_node("autobox:spike","spike.box",node_definition,true)
 
 node_definition ={
 	description =  "Spike2",
@@ -517,30 +514,7 @@ node_definition ={
         groups = { cracky=2 },
 
 }
-autobox.register_node("autobox:spike2","spike2.box",node_definition,false)
-
-node_definition ={
-	description =  "Spike2-Relo",
-	drawtype = "mesh",
-        mesh = "spike2-relo.obj",
-        sunlight_propagates = true,
-        paramtype2 = "facedir",
-        collision_box = {
-            type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
-        },
-        selection_box = {
-            type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
-        },
-
-        tiles = {"stone.png"},
-
-        
-        groups = { cracky=2 },
-
-}
-autobox.register_node("autobox:spike2_relo","spike2-relo.box",node_definition,false)
+autobox.register_node("autobox:spike2","spike2.box",node_definition,true)
 
 node_definition ={
 	description =  "Wagon",
@@ -563,27 +537,5 @@ node_definition ={
         groups = { cracky=2 },
 
 }
-autobox.register_node("autobox:wagon","wagon.box",node_definition,false)
+autobox.register_node("autobox:wagon","wagon.box",node_definition,true)
 
-node_definition ={
-	description =  "Bridge",
-	drawtype = "mesh",
-        mesh = "bridge.obj",
-        sunlight_propagates = true,
-        paramtype2 = "facedir",
-        collision_box = {
-            type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
-        },
-        selection_box = {
-            type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
-        },
-
-        tiles = {"bridge.png"},
-
-        
-        groups = { cracky=2 },
-
-}
-autobox.register_node("autobox:bridge","bridge.box",node_definition,false)
