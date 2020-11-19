@@ -524,18 +524,18 @@ end --End autobox function
 
 --Example
 node_definition ={
-	description =  "Glove",
+	description =  "Example",
 	drawtype = "mesh",
-        mesh = "glove.obj",
+        mesh = "example.obj",
         sunlight_propagates = true,
         paramtype2 = "facedir",
         collision_box = {
             type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
+            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}} --overwritten later
         },
         selection_box = {
             type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
+            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}} --overwritten later
         },
 
         tiles = {"stone.png"},
@@ -544,54 +544,9 @@ node_definition ={
         groups = { cracky=2 },
 
 }
-autobox.register_node("autobox:glove","glove.box",node_definition,false)
+autobox.register_node("autobox:example","example.box",node_definition,true)
 
-node_definition ={
-	description =  "Spike",
-	drawtype = "mesh",
-        mesh = "spike.obj",
-        sunlight_propagates = true,
-        paramtype2 = "facedir",
-        collision_box = {
-            type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
-        },
-        selection_box = {
-            type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
-        },
-
-        tiles = {"stone.png"},
-
-        
-        groups = { cracky=2 },
-
-}
-autobox.register_node("autobox:spike","spike.box",node_definition,true)
-
-node_definition ={
-	description =  "Spike2",
-	drawtype = "mesh",
-        mesh = "spike2.obj",
-        sunlight_propagates = true,
-        paramtype2 = "facedir",
-        collision_box = {
-            type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
-        },
-        selection_box = {
-            type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
-        },
-
-        tiles = {"stone.png"},
-
-        
-        groups = { cracky=2 },
-
-}
-autobox.register_node("autobox:spike2","spike2.box",node_definition,true)
-
+--Second Example
 node_definition ={
 	description =  "Wagon",
 	drawtype = "mesh",
@@ -600,11 +555,11 @@ node_definition ={
         paramtype2 = "facedir",
         collision_box = {
             type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
+            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}} --overwritten later
         },
         selection_box = {
             type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}}
+            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}} --overwritten later
         },
 
         tiles = {"wagon.png"},
