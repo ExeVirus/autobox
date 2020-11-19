@@ -84,10 +84,10 @@ local function buildable(node, pos_list, numPositions, current_pos, old_param2, 
 		return true
 	elseif  node == nil  then
 		return true
-	elseif  false  then
-	
-	elseif  false  then
-	
+	elseif  minetest.registered_nodes[node.name].drawtype == "liquid"  then
+		return true
+	elseif  minetest.registered_nodes[node.name].drawtype == "flowingliquid"  then
+		return true
 	else 
 		return false
 	end
@@ -144,45 +144,6 @@ if data.numNodes > 1 then
     for i=2,data.numNodes do 
         node_pos_list[i-1] = data.nodes[i].position    
     end
-    
-    ----------------------------------------On Construct-----------------------------------------------
-    -- placement_node.on_construct = function(pos)
-        -- --Check if placement can occur:
-        -- if respect_nodes == true then
-            -- for i=2,data.numNodes do
-                -- local node_pos = vector.add(pos, data.nodes[i].position)
-                -- local node_name = minetest.get_node_or_nil(node_pos).name
-                -- if node_name ~= "air" and node_name ~= nil then
-                    
-                    -- minetest.remove_node(pos) --Placement Won't work
-                    
-                    -- --Let the nearby players know why it didn't work
-                    -- local all_objects = minetest.get_objects_inside_radius(pos, 15)
-                    -- for _,obj in ipairs(all_objects) do
-                        -- if obj:is_player() then
-                            -- minetest.chat_send_player(obj,"Unable to place " .. name .. " due to node already at: (" .. node_pos.x .. ", " .. node_pos.y .. ", " .. node_pos.z .. ")")
-                        -- end
-                    -- end
-                    -- return false --hopefully this is allowed :)
-                -- end
-            -- end
-        -- end
-        
-        -- --Okay we will be able to place our object without any issues, let's do so
-  
-        -- --First save the positions of all the child nodes
-        -- local meta = minetest.get_meta(pos)
-        -- meta:set_string("child_nodes", minetest.serialize(node_pos_list))
-		-- meta:set_string("numNodes", tostring(data.numNodes-1))
-		-- local parent_param2 = minetest.get_node(pos).param2
-        
-        -- --then place all the child nodes
-        -- for i=2,data.numNodes do
-			-- local child_pos = vector.add(pos, param2offset(data.nodes[i].position, parent_param2)) --calculate node position
-            -- minetest.set_node(child_pos,{name=name..i-1, param1 = 0, param2 = parent_param2 }) --set the node
-			-- minetest.get_meta(child_pos):set_string("parent_pos", minetest.serialize(pos)) --set that node's parent
-        -- end
-    -- end
 	
 	----------------------------------------On Place-----------------------------------------------	
 	placement_node.on_place = function(itemstack, placer, pointed_thing) --Mostly taken from core.item_place_node
@@ -383,7 +344,6 @@ if data.numNodes > 1 then
 			local next_param2 = (original_param2 + 1) % 24
 			
 			while next_param2 ~= original_param2 do
-				minetest.log(next_param2)
 				local protected = false
 				local blocked = false
 				
