@@ -49,7 +49,7 @@ Child_nodes are not in creative inventory, and should never be dropped in any wa
 
 ## Sample
 
-To get a sample of what Autobox can let you do, uncomment the "init.lua" file's last line, which loads "eaxmple.lua". Then load up a creative world with autbox enabled and start placing and rotating and digging some "autobox:example" and "autobox:wagon" nodes to get a feel for the mod.
+To get a sample of what Autobox can let you do, uncomment the "init.lua" file's last line, which loads "example.lua". Then load up a creative world with autobox enabled and start placing and rotating and digging some "autobox:example" and "autobox:wagon" nodes to get a feel for the mod.
 
 Happy *Auto*boxing!
 
