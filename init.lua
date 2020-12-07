@@ -132,9 +132,6 @@ local f = io.open(path .. "/data/" .. data_filename, "rb")
 local data = minetest.deserialize(f:read("*all"))
 io.close(f)
 
-
-
-
 local placement_node = copy(node_definition)
 if data.numNodes > 1 then
     
@@ -410,31 +407,6 @@ if data.numNodes > 1 then
         --All spots are available, Delele old nodes, place the new nodes at correct locations. setting 'param2 = new_param2' (to get correct collision boxes)
 		
         delete_and_place(node_pos_list, numNodes, new_param2, name, pos)
-        -- --table for storing node_param1 values
-        -- local param1s = {}
-        
-        -- --Remove old child nodes
-        -- local old_param2 = node.param2
-        -- for i=1,numNodes do
-			-- local child_pos = vector.add(pos, param2offset(node_pos_list[i], old_param2))
-            -- param1s[i] = minetest.get_node(child_pos).param1
-			-- minetest.swap_node(child_pos,{name="air"}) --Don't trigger the destructors
-			-- minetest.get_meta(child_pos):from_table(nil) --delete the metadata
-        -- end
-		        
-        -- --Place new child nodes
-		-- for i=1,numNodes do
-			-- local adjusted_offset = param2offset(node_pos_list[i], new_param2)
-			-- local child_pos = vector.add(pos, adjusted_offset) --calculate node position
-			-- minetest.swap_node(child_pos,{name=name..i, param1 = param1s[i], param2 = new_param2 }) --set the node
-            -- local meta = minetest.get_meta(child_pos)
-            -- meta:from_table(nil) --delete the metadata
-			-- meta:set_string("parent_pos", minetest.serialize(pos)) --set that node's parent
-        -- end
-        
-        -- --Don't forget the parent node itself :)
-		-- local p_node = minetest.get_node(pos)
-		-- minetest.swap_node(pos,{name=p_node.name, param1 = p_node.param1, param2 = new_param2})
 		return true --rotate success
     end
     
@@ -523,50 +495,4 @@ end --end if single node represented object
 end --End autobox function
 
 --Example
-node_definition ={
-	description =  "Example",
-	drawtype = "mesh",
-        mesh = "example.obj",
-        sunlight_propagates = true,
-        paramtype2 = "facedir",
-        collision_box = {
-            type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}} --overwritten later
-        },
-        selection_box = {
-            type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}} --overwritten later
-        },
-
-        tiles = {"stone.png"},
-
-        
-        groups = { cracky=2 },
-
-}
-autobox.register_node("autobox:example","example.box",node_definition,true)
-
---Second Example
-node_definition ={
-	description =  "Wagon",
-	drawtype = "mesh",
-        mesh = "wagon.obj",
-        sunlight_propagates = true,
-        paramtype2 = "facedir",
-        collision_box = {
-            type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}} --overwritten later
-        },
-        selection_box = {
-            type = "fixed",
-            fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}} --overwritten later
-        },
-
-        tiles = {"wagon.png"},
-
-        
-        groups = { cracky=2 },
-
-}
-autobox.register_node("autobox:wagon","wagon.box",node_definition,true)
-
+--dofile(minetest.get_modpath("autobox") .. "/example.lua")
