@@ -495,4 +495,4 @@ end --end if single node represented object
 end --End autobox function
 
 --Example
---dofile(minetest.get_modpath("autobox") .. "/example.lua")
+dofile(minetest.get_modpath("autobox") .. "/example.lua")
