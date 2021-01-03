@@ -221,7 +221,7 @@ if data.numNodes > 1 then
                         .. minetest.pos_to_string(child_pos))
                 minetest.record_protection_violation(place_to, playername)
                 --Let the player know:
-                minetest.chat_send_player(playername, "Unable to place object at ".. minetest.pos_to_string(place_to) .. " due to protection at: " .. minetest.pos_to_string(node_pos))
+                minetest.chat_send_player(playername, "Unable to place object at ".. minetest.pos_to_string(place_to) .. " due to protection at: " .. minetest.pos_to_string(child_pos))
                 return itemstack, nil
             end
         end
