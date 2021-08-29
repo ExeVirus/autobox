@@ -16,7 +16,7 @@ node_definition ={
             fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}} --overwritten later
         },
 
-        tiles = {"stone.png"},
+        tiles = {"autobox_stone.png"},
 
         
         groups = { cracky=2 },
@@ -40,7 +40,7 @@ node_definition ={
             fixed = {{0.95, -1.55, -0.55, -0.25, -0.65, 0.55}} --overwritten later
         },
 
-        tiles = {"wagon.jpg"},
+        tiles = {"autobox_wagon.jpg"},
 
         
         groups = { cracky=2 },
