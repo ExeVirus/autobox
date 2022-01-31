@@ -4,11 +4,11 @@
 autobox = {}
 
 local function param2offset(pos, param2)
-    local ret = {}
-        local param2Table = {
+	local ret = {}
+		local param2Table = {
 		[0]={"x",1,"y",1,"z",1}, --0
-        {"z",1,"y",1,"x",-1}, --1
-        {"x",-1,"y",1,"z",-1}, --2
+		{"z",1,"y",1,"x",-1}, --1
+		{"x",-1,"y",1,"z",-1}, --2
 		{"z",-1,"y",1,"x",1}, --3
 		
 		{"x",1,"z",-1,"y",1}, --4
@@ -35,10 +35,10 @@ local function param2offset(pos, param2)
 		{"z",-1,"y",-1,"x",-1}, --21
 		{"x",1,"y",-1,"z",-1}, --22
 		{"z",1,"y",-1,"x",1}, --23   
-        } --End all 24 directions
-        ret.x = pos[param2Table[param2][1]] * param2Table[param2][2] --{x or y or z value} * {+1 or -1}
-        ret.y = pos[param2Table[param2][3]] * param2Table[param2][4]
-        ret.z = pos[param2Table[param2][5]] * param2Table[param2][6]
+		} --End all 24 directions
+		ret.x = pos[param2Table[param2][1]] * param2Table[param2][2] --{x or y or z value} * {+1 or -1}
+		ret.y = pos[param2Table[param2][3]] * param2Table[param2][4]
+		ret.z = pos[param2Table[param2][5]] * param2Table[param2][6]
 		if ret.x == -0 then
 			ret.x = 0
 		end
@@ -48,7 +48,7 @@ local function param2offset(pos, param2)
 		if ret.z == -0 then
 			ret.z = 0
 		end
-    return ret
+	return ret
 end
 
 
@@ -98,7 +98,7 @@ function delete_and_place(node_pos_list, numNodes, new_param2, name, pos)
 	
 	local p_node = minetest.get_node(pos)
 	local old_param2 = p_node.param2
-        
+		
 	--Remove old child nodes
 	for i=1,numNodes do
 		local child_pos = vector.add(pos, param2offset(node_pos_list[i], old_param2))
@@ -106,7 +106,7 @@ function delete_and_place(node_pos_list, numNodes, new_param2, name, pos)
 		minetest.swap_node(child_pos,{name="air"}) --Don't trigger the destructors
 		minetest.get_meta(child_pos):from_table(nil) --delete the metadata
 	end
-		        
+				
 	--Place new child nodes
 	for i=1,numNodes do
 		local adjusted_offset = param2offset(node_pos_list[i], new_param2)
@@ -134,14 +134,14 @@ io.close(f)
 
 local placement_node = copy(node_definition)
 if data.numNodes > 1 then
-    
-    
-    --Get list of child node positions
-    local node_pos_list = {}
-    for i=2,data.numNodes do 
-        node_pos_list[i-1] = data.nodes[i].position    
-    end
 	
+	
+	--Get list of child node positions
+	local node_pos_list = {}
+	for i=2,data.numNodes do 
+		node_pos_list[i-1] = data.nodes[i].position	
+	end
+	placement_nodeuse_texture_alpha = "clip"
 	----------------------------------------On Place-----------------------------------------------	
 	placement_node.on_place = function(itemstack, placer, pointed_thing) --Mostly taken from core.item_place_node
 		if pointed_thing.type ~= "node" then
@@ -189,10 +189,10 @@ if data.numNodes > 1 then
 			minetest.record_protection_violation(place_to, playername)
 			return itemstack, nil
 		end
-        
-        --Get the param2 set before cycling through children nodes
-        
-        local oldnode = minetest.get_node(place_to)
+		
+		--Get the param2 set before cycling through children nodes
+		
+		local oldnode = minetest.get_node(place_to)
 		local newnode = {name = name, param1 = 0, param2 = param2 or 0}
 		
 		if placement_node.place_param2 ~= nil then
@@ -210,26 +210,26 @@ if data.numNodes > 1 then
 				log("info", "facedir: " .. newnode.param2)
 			end
 		end
-        
-        --Now check protection for all the child nodes
-        for i=2,data.numNodes do
-            local child_pos = vector.add(place_to, param2offset(data.nodes[i].position, newnode.param2))
-            if minetest.is_protected(child_pos, playername) then
-                log("action", playername
-                        .. " tried to place " .. def.name .. i-1
-                        .. " at protected position "
-                        .. minetest.pos_to_string(child_pos))
-                minetest.record_protection_violation(place_to, playername)
-                --Let the player know:
-                minetest.chat_send_player(playername, "Unable to place object at ".. minetest.pos_to_string(place_to) .. " due to protection at: " .. minetest.pos_to_string(child_pos))
-                return itemstack, nil
-            end
-        end
 		
-        --Now check if all spots besides the first is available
-        --If not, let the player know where
+		--Now check protection for all the child nodes
+		for i=2,data.numNodes do
+			local child_pos = vector.add(place_to, param2offset(data.nodes[i].position, newnode.param2))
+			if minetest.is_protected(child_pos, playername) then
+				log("action", playername
+						.. " tried to place " .. def.name .. i-1
+						.. " at protected position "
+						.. minetest.pos_to_string(child_pos))
+				minetest.record_protection_violation(place_to, playername)
+				--Let the player know:
+				minetest.chat_send_player(playername, "Unable to place object at ".. minetest.pos_to_string(place_to) .. " due to protection at: " .. minetest.pos_to_string(child_pos))
+				return itemstack, nil
+			end
+		end
+		
+		--Now check if all spots besides the first is available
+		--If not, let the player know where
 		if respect_nodes == true then
-            for i=2,data.numNodes do
+			for i=2,data.numNodes do
 				local child_pos = vector.add(place_to, param2offset(data.nodes[i].position, newnode.param2))
 				local node_there = minetest.get_node_or_nil(child_pos)
 				if buildable(node_there) == false then
@@ -241,27 +241,27 @@ if data.numNodes > 1 then
 					return itemstack, nil
 				end
 			end
-        end
+		end
 
 		log("action", playername .. " places node "
 				.. name .. " at " .. minetest.pos_to_string(place_to))		
 		
 		-- Add node and update
 		minetest.add_node(place_to, newnode)
-        
-        --Set up meta for finding the child nodes later
-        local meta = minetest.get_meta(place_to)
-        meta:set_string("child_nodes", minetest.serialize(node_pos_list))
+		
+		--Set up meta for finding the child nodes later
+		local meta = minetest.get_meta(place_to)
+		meta:set_string("child_nodes", minetest.serialize(node_pos_list))
 		meta:set_string("numNodes", tostring(data.numNodes-1))
 		
 		-- add the rest of the nodes, but without callbacks, since the parent handles all that :)
-        for i=2,data.numNodes do
+		for i=2,data.numNodes do
 			local child_pos = vector.add(place_to, param2offset(data.nodes[i].position, newnode.param2)) --calculate node position
-            minetest.swap_node(child_pos,{name=name..i-1, param2 = newnode.param2 }) --set the node
-            local meta = minetest.get_meta(child_pos)
-            meta:from_table(nil) --delete previous meta
+			minetest.swap_node(child_pos,{name=name..i-1, param2 = newnode.param2 }) --set the node
+			local meta = minetest.get_meta(child_pos)
+			meta:from_table(nil) --delete previous meta
 			meta:set_string("parent_pos", minetest.serialize(place_to)) --set the child node's parent position
-        end
+		end
 			
 		-- Play sound if it was done by a player
 		if playername ~= "" and placement_node.sounds and placement_node.sounds.place then
@@ -301,12 +301,12 @@ if data.numNodes > 1 then
 		end
 		return itemstack, place_to
 	end
-    
-    ----------------------------------------On Destruct----------------------------------------
-    placement_node.on_destruct = function(pos)
-        local meta = minetest.get_meta(pos)
-        --First remove the nodes
-        local node_pos_list = minetest.deserialize(meta:get_string("child_nodes"))
+	
+	----------------------------------------On Destruct----------------------------------------
+	placement_node.on_destruct = function(pos)
+		local meta = minetest.get_meta(pos)
+		--First remove the nodes
+		local node_pos_list = minetest.deserialize(meta:get_string("child_nodes"))
 		if node_pos_list ~= nil then
 			local parent_param2 = minetest.get_node(pos).param2
 			--param 2 is between 0-23, need to properly change directions of the node position offsets based on this value
@@ -321,19 +321,19 @@ if data.numNodes > 1 then
 				minetest.get_meta(vector.add(pos, adjusted_offset)):from_table(nil) --delete the metadata
 			end
 		end
-    end
-    
-    ----------------------------------------On Rotate-----------------------------------------------
-    placement_node.on_rotate = function(pos, node, user, mode, new_param2) --ignore new_param2 and just use the mode and a lookup table
-        --Get player name for protection checking and chat
-        local playername = user and user:get_player_name() or ""
-        if playername == nil then
+	end
+	
+	----------------------------------------On Rotate-----------------------------------------------
+	placement_node.on_rotate = function(pos, node, user, mode, new_param2) --ignore new_param2 and just use the mode and a lookup table
+		--Get player name for protection checking and chat
+		local playername = user and user:get_player_name() or ""
+		if playername == nil then
 			return false
 		end
 		
-        --Get meta describing positioning
-        local meta = minetest.get_meta(pos)
-        local node_pos_list = minetest.deserialize(meta:get_string("child_nodes"))
+		--Get meta describing positioning
+		local meta = minetest.get_meta(pos)
+		local node_pos_list = minetest.deserialize(meta:get_string("child_nodes"))
 		local numNodes =  tonumber(meta:get_string("numNodes"))
 		
 		if user:get_player_control().sneak then --we are doing a sneak-rotate instead, i.e. go to next available
@@ -375,41 +375,41 @@ if data.numNodes > 1 then
 			minetest.chat_send_player(playername, "Unable to rotate object in any other direction due to protection (or nodes blocking the way), you should make room")
 			return false
 		end
-        
-        --Check protection for children node destinations
-        for i=1,numNodes do
-            local child_pos = vector.add(pos, param2offset(node_pos_list[i], new_param2))
-            if minetest.is_protected(child_pos, player_name) then
-                --Let the player know:
-                minetest.chat_send_player(playername, "Unable to rotate object at ".. minetest.pos_to_string(pos) .. " due to protection at: " .. minetest.pos_to_string(child_pos))
-                return false --Fail to rotate
-            end
-        end
 		
-        --Now check if all spots, besides the first, are available
-        --If not, let the player know where
+		--Check protection for children node destinations
+		for i=1,numNodes do
+			local child_pos = vector.add(pos, param2offset(node_pos_list[i], new_param2))
+			if minetest.is_protected(child_pos, player_name) then
+				--Let the player know:
+				minetest.chat_send_player(playername, "Unable to rotate object at ".. minetest.pos_to_string(pos) .. " due to protection at: " .. minetest.pos_to_string(child_pos))
+				return false --Fail to rotate
+			end
+		end
+		
+		--Now check if all spots, besides the first, are available
+		--If not, let the player know where
 		if respect_nodes == true then
-            for i=1,numNodes do
+			for i=1,numNodes do
 				local old_param2 = minetest.get_node(pos).param2
-                local child_pos = vector.add(pos, param2offset(node_pos_list[i], new_param2))
-                local node_there = minetest.get_node_or_nil(child_pos)
-                if buildable(node_there, node_pos_list, numNodes, i, old_param2 , new_param2) == false then
-                    minetest.chat_send_player(playername, "Unable to rotate object at ".. minetest.pos_to_string(pos) .. 
+				local child_pos = vector.add(pos, param2offset(node_pos_list[i], new_param2))
+				local node_there = minetest.get_node_or_nil(child_pos)
+				if buildable(node_there, node_pos_list, numNodes, i, old_param2 , new_param2) == false then
+					minetest.chat_send_player(playername, "Unable to rotate object at ".. minetest.pos_to_string(pos) .. 
 									" due to " .. node_there.name .. " node at " .. minetest.pos_to_string(child_pos) ..
 									"\n You may do a sneak-rotate to go to the next available rotation, or remove that node" 
 									)
 					
 					return false --Fail to rotate
-                end
-            end
-        end
-           
-        --All spots are available, Delele old nodes, place the new nodes at correct locations. setting 'param2 = new_param2' (to get correct collision boxes)
+				end
+			end
+		end
+		   
+		--All spots are available, Delele old nodes, place the new nodes at correct locations. setting 'param2 = new_param2' (to get correct collision boxes)
 		
-        delete_and_place(node_pos_list, numNodes, new_param2, name, pos)
+		delete_and_place(node_pos_list, numNodes, new_param2, name, pos)
 		return true --rotate success
-    end
-    
+	end
+	
 	placement_node.collision_box =  {
 										type = "fixed",
 										fixed = data.nodes[1].boxTable
@@ -436,12 +436,12 @@ if data.numNodes > 1 then
 										}
 			child_def.drop = ""
 			child_def.groups.not_in_creative_inventory = 1
-            
-            --Call the parent for everything :)
-            
+			
+			--Call the parent for everything :)
+			
 			child_def.on_destruct = function(pos) --This will only occur on a dig
 				local parent_pos = minetest.deserialize(minetest.get_meta(pos):get_string("parent_pos"))
-                minetest.remove_node(parent_pos)
+				minetest.remove_node(parent_pos)
 			end
 			
 			child_def.on_dig = function(pos, node, digger)
@@ -453,32 +453,32 @@ if data.numNodes > 1 then
 				local parent_pos = minetest.deserialize(minetest.get_meta(pos):get_string("parent_pos"))
 				return minetest.registered_nodes[name].on_rotate(parent_pos, minetest.get_node(parent_pos), user, mode, new_param2)
 			end
-            
-            child_def.on_punch = function(pos, node, puncher, pointed_thing)
-                if minetest.registered_nodes[name].on_punch ~= nil then
+			
+			child_def.on_punch = function(pos, node, puncher, pointed_thing)
+				if minetest.registered_nodes[name].on_punch ~= nil then
 					local parent_pos = minetest.deserialize(minetest.get_meta(pos):get_string("parent_pos"))
 					return minetest.registered_nodes[name].on_punch(parent_pos, minetest.get_node(parent_pos), puncher, pointed_thing)
 				end
 			end
-            
-            child_def.on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
+			
+			child_def.on_rightclick = function(pos, node, clicker, itemstack, pointed_thing)
 				if minetest.registered_nodes[name].on_rightclick ~= nil  then
 					local parent_pos = minetest.deserialize(minetest.get_meta(pos):get_string("parent_pos"))				
 					return minetest.registered_nodes[name].on_rightclick(parent_pos, minetest.get_node(parent_pos), clicker, itemstack, pointed_thing)
 				end
-            end
-            
-            child_def.on_blast = function(pos, intensity)
-                if minetest.registered_nodes[name].on_blast ~= nil then
+			end
+			
+			child_def.on_blast = function(pos, intensity)
+				if minetest.registered_nodes[name].on_blast ~= nil then
 					local parent_pos = minetest.deserialize(minetest.get_meta(pos):get_string("parent_pos"))
 					return minetest.registered_nodes[name].on_blast(parent_pos, intensity)
 				end
-            end
+			end
 			
-            minetest.register_node(name..i-1, child_def)
+			minetest.register_node(name..i-1, child_def)
 	end  
 else 
-                                    -----------Single node representation----------------
+									-----------Single node representation----------------
 	--Only need to overwrite the collision and selection boxes
 	placement_node.collision_box = {
 										type = "fixed",
