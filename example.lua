@@ -18,7 +18,7 @@ node_definition ={
 
         tiles = {"autobox_stone.png"},
 
-        
+
         groups = { cracky=2 },
 
 }
@@ -42,7 +42,7 @@ node_definition ={
 
         tiles = {"autobox_wagon.jpg"},
 
-        
+
         groups = { cracky=2 },
 
 }
